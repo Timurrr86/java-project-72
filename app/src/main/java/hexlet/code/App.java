@@ -19,7 +19,7 @@ public class App {
             ctx.attribute("ctx", ctx);
         });
         app.get("/", ctx -> {
-            ctx.result("Hello World");
+            ctx.render("index.html");
         });
 
         return app;
