@@ -33,6 +33,10 @@ public class App {
         return Integer.valueOf(port);
     }
 
+    private static String getMode() {
+        return System.getenv().getOrDefault("APP_ENV", "development");
+    }
+
     private static TemplateEngine getTemplateEngine() {
         TemplateEngine templateEngine = new TemplateEngine();
 
