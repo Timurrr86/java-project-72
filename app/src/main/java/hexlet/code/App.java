@@ -15,15 +15,17 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 public class App {
     public static Javalin getApp() {
         Javalin app = Javalin.create(config -> {
-            config.plugins.enableDevLogging();
-
+            if (!isProduction()) {
+                config.plugins.enableDevLogging();
+            }
             JavalinThymeleaf.init(getTemplateEngine());
         });
+
+        addRoutes(app);
 
         app.before(ctx -> {
             ctx.attribute("ctx", ctx);
         });
-        app.get("/", RootController.welcome);
 
         return app;
     }
@@ -35,6 +37,10 @@ public class App {
 
     private static String getMode() {
         return System.getenv().getOrDefault("APP_ENV", "development");
+    }
+
+    private static boolean isProduction() {
+        return getMode().equals("production");
     }
 
     private static TemplateEngine getTemplateEngine() {

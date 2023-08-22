@@ -19,7 +19,7 @@ dependencies {
     implementation 'io.javalin:javalin-rendering:5.5.0'
     implementation("org.slf4j:slf4j-simple:2.0.7")
 
-    implementation 'io.ebean:ebean:13.18.0'
+    implementation 'io.ebean:ebean:13.20.1'
     implementation 'io.ebean:ebean-annotation:8.4'
     implementation 'io.ebean:ebean-querybean:13.18.0'
     implementation 'io.ebean:ebean-migration:13.9.0'
@@ -32,6 +32,7 @@ dependencies {
 
 
     implementation 'com.h2database:h2:2.1.214'
+    implementation 'org.postgresql:postgresql:42.6.0'
 
     implementation 'org.jsoup:jsoup:1.16.1'
     implementation 'com.konghq:unirest-java:4.0.0-RC2'
