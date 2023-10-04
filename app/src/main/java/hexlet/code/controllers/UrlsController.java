@@ -1,7 +1,7 @@
 package hexlet.code.controllers;
 
-import hexlet.code.domain.Url;
-import hexlet.code.domain.UrlCheck;
+import hexlet.code.model.Url;
+import hexlet.code.model.UrlCheck;
 import io.ebean.PagedList;
 import io.javalin.http.Handler;
 import io.javalin.http.NotFoundResponse;
@@ -13,8 +13,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import hexlet.code.domain.query.QUrl;
-import hexlet.code.domain.query.QUrlCheck;
+import hexlet.code.model.query.QUrl;
+import hexlet.code.model.query.QUrlCheck;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import kong.unirest.UnirestException;
@@ -23,7 +23,7 @@ import org.jsoup.nodes.Document;
 
 
 
-public class UrlController {
+public class UrlsController {
     public static Handler listURLs = ctx -> {
         int page = ctx.queryParamAsClass("page", Integer.class).getOrDefault(1) - 1;
         int rowsPerPage = 10;
