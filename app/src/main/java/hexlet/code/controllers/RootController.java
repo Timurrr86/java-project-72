@@ -1,10 +1,10 @@
 package hexlet.code.controllers;
 
-import io.javalin.http.Context;
+import io.javalin.http.Handler;
 
 public final class RootController {
-
-    public static void welcome(Context ctx) {
+    public static Handler welcome = ctx -> {
         ctx.render("index.html");
-    }
+    };
 }
+

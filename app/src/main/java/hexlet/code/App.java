@@ -13,13 +13,16 @@ import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
 import gg.jte.resolve.ResourceCodeResolver;
 import hexlet.code.repository.BaseRepository;
-import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinJte;
 import lombok.extern.slf4j.Slf4j;
 
 import hexlet.code.controllers.RootController;
 import hexlet.code.controllers.UrlsController;
+
+import static io.javalin.apibuilder.ApiBuilder.path;
+import static io.javalin.apibuilder.ApiBuilder.post;
+import static io.javalin.apibuilder.ApiBuilder.get;
 
 @Slf4j
 public final class App {
@@ -58,11 +61,7 @@ public final class App {
 
         JavalinJte.init(createTemplateEngine());
 
-        app.get("/", RootController::welcome);
-        app.get(NamedRoutes.urlsPath(), UrlsController::listUrls);
-        app.post(NamedRoutes.urlsPath(), UrlsController::createUrl);
-        app.get(NamedRoutes.urlPath("{id}"), UrlsController::showUrl);
-        app.post(NamedRoutes.urlChecksPath("{id}"), UrlsController::checkUrl);
+        addRoutes(app);
 
         return app;
     }
@@ -84,6 +83,20 @@ public final class App {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
             return reader.lines().collect(Collectors.joining("\n"));
         }
+    }
+
+    private static void addRoutes(Javalin app) {
+        app.get("/", RootController.welcome);
+        app.routes(() -> {
+            path("urls", () -> {
+                get(UrlsController.listURLs);
+                post(UrlsController.createUrl);
+                path("{id}", () -> {
+                    get(UrlsController.showUrl);
+                    post("/checks", UrlsController.checkUrl);
+                });
+            });
+        });
     }
 
     public static void main(String[] args) throws SQLException, IOException {
