@@ -1,5 +1,7 @@
 package hexlet.code.controllers;
 
+import hexlet.code.dto.UrlPage;
+import hexlet.code.dto.UrlsPage;
 import hexlet.code.model.Url;
 import hexlet.code.model.UrlCheck;
 import hexlet.code.repository.UrlChecksRepository;
@@ -26,9 +28,6 @@ public class UrlsController {
         page.setFlash(ctx.consumeSessionAttribute("flash"));
         page.setFlashType(ctx.consumeSessionAttribute("flash-type"));
 
-        ctx.attribute("urls", urls);
-        ctx.attribute("pages", pages);
-        ctx.attribute("currentPage", currentPage);
         ctx.render("urls/index.html");
     };
 
@@ -40,13 +39,10 @@ public class UrlsController {
         } catch (Exception e) {
             ctx.sessionAttribute("flash", "Некорректный URL");
             ctx.sessionAttribute("flash-type", "danger");
-            ctx.redirect(NamedRoutes.rootPath());
+            ctx.redirect("/");
             return;
         }
 
-        // Нормализируем урл.
-        // Нужны только протокол, имя домена и порт (если задан).
-        // В случае дефолтного порта 80, его указывать не требуется
         String normalizedUrl = String
                 .format(
                         "%s://%s%s",
@@ -77,7 +73,7 @@ public class UrlsController {
         var url = UrlsRepository.find(id)
                 .orElseThrow(() -> new NotFoundResponse("Url with id = " + id + " not found"));
 
-        var urlChecks = UrlChecksRepository.findByUrlId(id);
+        var urlChecks = UrlChecksRepository.findLastCheckByUrlId(id);
 
         var page = new UrlPage(url, urlChecks);
         page.setFlash(ctx.consumeSessionAttribute("flash"));
