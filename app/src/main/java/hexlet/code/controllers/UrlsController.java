@@ -28,7 +28,10 @@ public class UrlsController {
         page.setFlash(ctx.consumeSessionAttribute("flash"));
         page.setFlashType(ctx.consumeSessionAttribute("flash-type"));
 
-        ctx.render("urls/index.html");
+        ctx.attribute("urls", urls);
+        ctx.attribute("page", page);
+
+        ctx.render("/urls/index.html");
     };
 
     public static Handler createUrl = ctx -> {

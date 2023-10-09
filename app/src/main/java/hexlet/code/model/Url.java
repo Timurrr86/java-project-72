@@ -2,6 +2,7 @@ package hexlet.code.model;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
 
 
 public final class Url {
@@ -12,6 +13,11 @@ public final class Url {
 
     private Timestamp  createdAt;
 
+    private List<UrlCheck> urlChecks;
+
+    public List<UrlCheck> getUrlChecks() {
+        return urlChecks;
+    }
 
     public Url() {
     }
@@ -40,11 +46,8 @@ public final class Url {
         return this.name;
     }
 
-    public Timestamp getCreatedAt() {
-        return this.createdAt;
-    }
-
-    public Instant getCreatedAtToInstant() {
+    public Instant getCreatedAt() {
         return this.createdAt.toInstant();
     }
+
 }

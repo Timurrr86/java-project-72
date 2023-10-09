@@ -27,10 +27,6 @@ public final class UrlCheck {
         this.description = description;
     }
 
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -83,7 +79,7 @@ public final class UrlCheck {
         this.urlId = urlId;
     }
 
-    public Instant getCreatedAtToInstant() {
+    public Instant getCreatedAt() {
         return this.createdAt.toInstant();
     }
 }
