@@ -51,7 +51,6 @@
     <!-- Checks whether files end with a new line.                        -->
     <!-- See https://checkstyle.org/config_misc.html#NewlineAtEndOfFile -->
     <module name="NewlineAtEndOfFile"/>
-    <property name="severity" value="ignore" />
 
 
     <!-- Checks that property files contain the same keys.         -->
