@@ -1,29 +1,25 @@
 package hexlet.code;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import hexlet.code.controllers.RootController;
+import hexlet.code.controllers.UrlsController;
+import hexlet.code.repository.BaseRepository;
+import io.javalin.Javalin;
+import io.javalin.rendering.template.JavalinThymeleaf;
+import lombok.extern.slf4j.Slf4j;
+import nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.stream.Collectors;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-import gg.jte.ContentType;
-import gg.jte.resolve.DirectoryCodeResolver;
-import gg.jte.resolve.ResourceCodeResolver;
-import hexlet.code.repository.BaseRepository;
-import io.javalin.Javalin;
-import lombok.extern.slf4j.Slf4j;
-
-import hexlet.code.controllers.RootController;
-import hexlet.code.controllers.UrlsController;
-import io.javalin.rendering.template.JavalinThymeleaf;
-import nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
-import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 import static io.javalin.apibuilder.ApiBuilder.path;
 import static io.javalin.apibuilder.ApiBuilder.post;

@@ -7,4 +7,3 @@ public final class RootController {
         ctx.render("index.html");
     };
 }
-

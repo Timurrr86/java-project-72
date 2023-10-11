@@ -2,7 +2,6 @@ package hexlet.code.model;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.List;
 
 
 public final class Url {
