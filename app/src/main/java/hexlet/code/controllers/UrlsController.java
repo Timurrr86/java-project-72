@@ -12,6 +12,7 @@ import io.javalin.http.NotFoundResponse;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
@@ -28,8 +29,18 @@ public class UrlsController {
         page.setFlash(ctx.consumeSessionAttribute("flash"));
         page.setFlashType(ctx.consumeSessionAttribute("flash-type"));
 
+        int lastPage = urls.size() + 1;
+        int currentPage = ctx.queryParamAsClass("page", Integer.class).getOrDefault(1);
+        List<Integer> pages = IntStream
+                .range(1, lastPage)
+                .boxed()
+                .toList();
+
+
         ctx.attribute("urls", urls);
-        ctx.attribute("page", page);
+        ctx.attribute("currentPage", currentPage);
+        ctx.attribute("urlChecks", urlChecks);
+        ctx.attribute("pages", pages);
 
         ctx.render("/urls/index.html");
     };

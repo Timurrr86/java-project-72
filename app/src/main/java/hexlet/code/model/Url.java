@@ -13,12 +13,6 @@ public final class Url {
 
     private Timestamp  createdAt;
 
-    private List<UrlCheck> urlChecks;
-
-    public List<UrlCheck> getUrlChecks() {
-        return urlChecks;
-    }
-
     public Url() {
     }
 
