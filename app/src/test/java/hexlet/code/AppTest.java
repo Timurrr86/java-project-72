@@ -75,6 +75,7 @@ public class AppTest {
             var response = client.post("/urls", requestBody);
             assertThat(response.code()).isEqualTo(200);
             Url actualUrl = UrlsRepository.findByName(mockUrl).orElse(null);
+            assertThat(actualUrl).isNotNull();
             assertThat(actualUrl.getName()).isEqualTo(mockUrl);
         });
     }
