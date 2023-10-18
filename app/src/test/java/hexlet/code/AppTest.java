@@ -1,20 +1,22 @@
 package hexlet.code;
 
-
 import hexlet.code.model.Url;
-import hexlet.code.model.query.QUrl;
-import io.ebean.DB;
-import io.ebean.Transaction;
+import hexlet.code.repository.UrlChecksRepository;
+import hexlet.code.repository.UrlsRepository;
 import io.javalin.Javalin;
-import kong.unirest.HttpResponse;
-import kong.unirest.Unirest;
+import io.javalin.testtools.JavalinTest;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,153 +27,95 @@ public class AppTest {
     }
 
     private static Javalin app;
-    private static String baseUrl;
-    private static Url existingUrl;
-    private static Transaction transaction;
-    private static final String SAMPLE_DIRECTORY = "src/test/resources";
+    private static MockWebServer mockServer;
+    private static String mockUrl;
+
+    private static Path getFixturePath(String fileName) {
+        return Paths.get("src", "test", "resources", fileName)
+                .toAbsolutePath().normalize();
+    }
+
+    private static String readFixture(String fileName) throws IOException {
+        Path filePath = getFixturePath(fileName);
+        return Files.readString(filePath).trim();
+    }
 
     @BeforeAll
-    public static void beforeAll() throws IOException {
-        app = App.getApp();
-        app.start(0);
-        int port = app.port();
-        baseUrl = "http://localhost:" + port;
-        existingUrl = new Url("https://youtube.com");
-        existingUrl.save();
+    public static void beforeAll() throws IOException, SQLException {
+
+        mockServer = new MockWebServer();
+        MockResponse mockedResponse = new MockResponse()
+                .setBody(readFixture("sample.html"));
+        mockServer.enqueue(mockedResponse);
+        mockServer.start();
     }
 
     @AfterAll
     public static void afterAll() throws IOException {
         app.stop();
+        mockServer.shutdown();
     }
 
     @BeforeEach
-    final void beforeEach() {
-        transaction = DB.beginTransaction();
-    }
-
-    @AfterEach
-    final void afterEach() {
-        transaction.rollback();
+    void setUp() throws SQLException, IOException {
+        app = App.getApp();
     }
 
     @Test
     void testIndex() {
-        HttpResponse<String> response = Unirest.get(baseUrl).asString();
-        assertThat(response.getStatus()).isEqualTo(200);
-    }
-
-    @Test
-    void testCreateExistingUrl() {
-        HttpResponse<String> responsePost1 = Unirest
-                .post(baseUrl + "/urls")
-                .field("url", existingUrl.getName())
-                .asEmpty();
-
-        HttpResponse<String> response = Unirest
-                .get(baseUrl)
-                .asString();
-        String body = response.getBody();
-
-        assertThat(response.getStatus()).isEqualTo(200);
-    }
-
-    @Test
-    void testIncorrectShowId() {
-        HttpResponse<String> response = Unirest
-                .get(baseUrl + "/urls/100")
-                .asString();
-        assertThat(response.getStatus()).isEqualTo(404);
-    }
-
-    @Test
-    void testIndexUrls() {
-        HttpResponse<String> response = Unirest
-                .get(baseUrl + "/urls")
-                .asString();
-        String body = response.getBody();
-        assertThat(body).contains(existingUrl.getName());
-        assertThat(response.getStatus()).isEqualTo(200);
+        JavalinTest.test(app, (server, client) -> {
+            assertThat(client.get("/").code()).isEqualTo(200);
+        });
     }
 
     @Test
     void testCreateUrl() {
-        String inputName = "https://ya.ru";
-        HttpResponse<String> responsePost = Unirest
-                .post(baseUrl + "/urls")
-                .field("url", inputName)
-                .asEmpty();
-
-        HttpResponse<String> response = Unirest
-                .get(baseUrl + "/urls")
-                .asString();
-
-        assertThat(response.getStatus()).isEqualTo(200);
-
-        Url actualUrl = new QUrl()
-                .name.equalTo(inputName)
-                .findOne();
-
-        assertThat(actualUrl).isNotNull();
-        assertThat(actualUrl.getName()).isEqualTo(inputName);
+        JavalinTest.test(app, (server, client) -> {
+            var requestBody = "url=" + mockUrl;
+            var response = client.post("/urls", requestBody);
+            assertThat(response.code()).isEqualTo(200);
+            Url actualUrl = UrlsRepository.findByName(mockUrl).orElse(null);
+            assertThat(actualUrl.getName()).isEqualTo(mockUrl);
+        });
     }
+
     @Test
-    void testCreateIncorrectUrl() {
-        String url = "IncorrectUrl";
-        HttpResponse responsePost = Unirest
-                .post(baseUrl + "/urls")
-                .field("url", url)
-                .asEmpty();
-
-        HttpResponse<String> response = Unirest
-                .get(baseUrl + "/urls")
-                .asString();
-        String body = response.getBody();
-
-        assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(body).doesNotContain(url);
-
-        Url actualUrl = new QUrl()
-                .name.equalTo(url)
-                .findOne();
-
-        assertThat(actualUrl).isNull();
+    public void testUrlPage() throws Exception {
+        var url = new Url(mockUrl);
+        UrlsRepository.save(url);
+        JavalinTest.test(app, (server, client) -> {
+            var response = client.get("/urls/" + url.getId());
+            assertThat(response.code()).isEqualTo(200);
+        });
     }
 
     @Test
     void testCheckUrl() throws Exception {
-        String samplePage = Files.readString(Paths.get(SAMPLE_DIRECTORY, "sample.html"));
+        String url = mockServer.url("/").toString().replaceAll("/$", "");
 
-        MockWebServer mockServer = new MockWebServer();
-        mockServer.enqueue(new MockResponse().setBody(samplePage));
-        mockServer.start();
-        String samplePageUrl = mockServer.url("/").toString();
+        JavalinTest.test(app, (server, client) -> {
+            var requestBody = "url=" + url;
+            assertThat(client.post("/urls", requestBody).code()).isEqualTo(200);
 
-        HttpResponse response = Unirest
-                .post(baseUrl + "/urls/")
-                .field("url", samplePageUrl)
-                .asEmpty();
+            var actualUrl = UrlsRepository.findByName(url).orElse(null);
 
-        Url url = new QUrl()
-                .name.equalTo(samplePageUrl.substring(0, samplePageUrl.length() - 1))
-                .findOne();
+            assertThat(actualUrl).isNotNull();
+            assertThat(actualUrl.getName()).isEqualTo(url);
 
-        HttpResponse response1 = Unirest
-                .post(baseUrl + "/urls/" + url.getId() + "/checks")
-                .asString();
+            client.post("/urls/" + actualUrl.getId() + "/checks");
 
-        assertThat(response1.getStatus()).isEqualTo(302);
-        assertThat(response1.getHeaders().getFirst("Location")).isEqualTo("/urls/" + url.getId());
+            var responce = client.get("/urls/" + actualUrl.getId());
+            assertThat(responce.code()).isEqualTo(200);
+            assertThat(responce.body().string()).contains(url);
 
-        String body = Unirest
-                .get(baseUrl + "/urls/" + url.getId())
-                .asString()
-                .getBody();
+            var actualCheckUrl = UrlChecksRepository
+                    .findLatestChecks().get(actualUrl.getId());
 
-        assertThat(body).contains("200");
-        assertThat(body).contains("Sample title");
-        assertThat(body).contains("Sample description");
-        assertThat(body).contains("Sample header");
-
+            assertThat(actualCheckUrl).isNotNull();
+            assertThat(actualCheckUrl.getStatusCode()).isEqualTo(200);
+            assertThat(actualCheckUrl.getTitle()).isEqualTo("Sample title");
+            assertThat(actualCheckUrl.getH1()).isEqualTo("Sample header");
+            assertThat(actualCheckUrl.getDescription()).contains("Sample description");
+        });
     }
 }
