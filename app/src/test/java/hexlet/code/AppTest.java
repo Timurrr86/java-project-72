@@ -13,11 +13,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 
+import static java.nio.file.Files.readString;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AppTest {
@@ -30,22 +30,14 @@ public class AppTest {
     private static MockWebServer mockServer;
     private static String mockUrl;
 
-    private static Path getFixturePath(String fileName) {
-        return Paths.get("src", "test", "resources", fileName)
-                .toAbsolutePath().normalize();
-    }
-
-    private static String readFixture(String fileName) throws IOException {
-        Path filePath = getFixturePath(fileName);
-        return Files.readString(filePath).trim();
-    }
-
     @BeforeAll
     public static void beforeAll() throws IOException, SQLException {
 
         mockServer = new MockWebServer();
+        Path path  = Paths.get("src/test/resources/sample.html").toAbsolutePath().normalize();
+
         MockResponse mockedResponse = new MockResponse()
-                .setBody(readFixture("sample.html"));
+                .setBody(readString(path));
         mockServer.enqueue(mockedResponse);
         mockServer.start();
     }
