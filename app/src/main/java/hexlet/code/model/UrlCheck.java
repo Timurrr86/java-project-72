@@ -1,9 +1,13 @@
 package hexlet.code.model;
 
-import java.sql.Timestamp;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.Instant;
 
 
+@Getter
+@Setter
 public final class UrlCheck {
 
     private long id;
@@ -16,7 +20,7 @@ public final class UrlCheck {
 
     private String description;
 
-    private Timestamp createdAt;
+    private Instant createdAt;
 
     private Long urlId;
 
@@ -27,59 +31,4 @@ public final class UrlCheck {
         this.description = description;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public String getH1() {
-        return h1;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public int getStatusCode() {
-        return statusCode;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public void setStatusCode(int statusCode) {
-        this.statusCode = statusCode;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setH1(String h1) {
-        this.h1 = h1;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Long getUrlId() {
-        return urlId;
-    }
-
-    public void setUrlId(Long urlId) {
-        this.urlId = urlId;
-    }
-
-    public Instant getCreatedAt() {
-        return this.createdAt.toInstant();
-    }
 }
