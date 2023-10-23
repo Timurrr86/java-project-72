@@ -58,6 +58,13 @@ public class AppTest {
     }
 
     @Test
+    void testIndex() {
+        JavalinTest.test(app, (server, client) -> {
+            assertThat(client.get("/").code()).isEqualTo(200);
+        });
+    }
+
+    @Test
     void testCreateUrl() {
         JavalinTest.test(app, (server, client) -> {
             var requestBody = "url=" + mockUrl;
