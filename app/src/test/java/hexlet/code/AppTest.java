@@ -32,6 +32,10 @@ public class AppTest {
 
     @BeforeAll
     public static void beforeAll() throws IOException, SQLException {
+        app = App.getApp();
+        app.start(0);
+        int port = app.port();
+        mockUrl = "http://localhost:" + port;
 
         mockServer = new MockWebServer();
         Path path  = Paths.get("src/test/resources/sample.html").toAbsolutePath().normalize();
@@ -97,9 +101,9 @@ public class AppTest {
 
             client.post("/urls/" + actualUrl.getId() + "/checks");
 
-            var responce = client.get("/urls/" + actualUrl.getId());
-            assertThat(responce.code()).isEqualTo(200);
-            assertThat(responce.body().string()).contains(url);
+            var response = client.get("/urls/" + actualUrl.getId());
+            assertThat(response.code()).isEqualTo(200);
+            assertThat(response.body().string()).contains(url);
 
             var actualCheckUrl = UrlChecksRepository
                     .findLatestChecks().get(actualUrl.getId());

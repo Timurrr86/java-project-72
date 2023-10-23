@@ -36,7 +36,7 @@ dependencies {
     implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.2.1'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE'
 
-    implementation 'org.webjars:bootstrap:5.3.0'
+    implementation 'org.webjars:bootstrap:5.3.2'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.10.0'
     testImplementation 'org.assertj:assertj-core:3.24.2'
