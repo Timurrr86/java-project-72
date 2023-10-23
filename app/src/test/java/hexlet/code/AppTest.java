@@ -111,7 +111,7 @@ public class AppTest {
             assertThat(actualCheckUrl).isNotNull();
             assertThat(actualCheckUrl.getStatusCode()).isEqualTo(200);
             assertThat(actualCheckUrl.getTitle()).isEqualTo("Sample title");
-            assertThat(actualCheckUrl.getH1()).isEqualTo("Header");
+            assertThat(actualCheckUrl.getH1()).isEqualTo("Sample header");
             assertThat(actualCheckUrl.getDescription()).contains("description");
         });
     }
