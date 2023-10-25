@@ -2,7 +2,7 @@ FROM eclipse-temurin:20-jdk
 
 RUN apt-get update && apt-get install -yq unzip
 
-ARG GRADLE_VERSION=8.3
+ARG GRADLE_VERSION=8.2
 
 RUN wget -q https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip \
     && unzip gradle-${GRADLE_VERSION}-bin.zip \
@@ -14,9 +14,9 @@ RUN mv gradle-${GRADLE_VERSION} ${GRADLE_HOME}
 
 ENV PATH=$PATH:$GRADLE_HOME/bin
 
-WORKDIR /app
+WORKDIR .
 
-COPY /app .
+COPY . .
 
 RUN gradle installDist
 
