@@ -15,27 +15,20 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.IntStream;
 
 public class UrlsController {
     public static Handler listURLs = ctx -> {
         List<Url> urls = UrlsRepository.getEntities();
-        try {
-            Map<Long, UrlCheck> urlChecks = UrlChecksRepository.findLatestChecks();
-            ctx.attribute("urlChecks", urlChecks);
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+        //Map<Long, UrlCheck> urlChecks = UrlChecksRepository.findLatestChecks();
         //var page = new UrlsPage(urls, urlChecks);
-        int page = ctx.queryParamAsClass("page", Integer.class).getOrDefault(1) - 1;
+        //int page = ctx.queryParamAsClass("page", Integer.class).getOrDefault(1) - 1;
         //page.setFlash(ctx.consumeSessionAttribute("flash"));
         //page.setFlashType(ctx.consumeSessionAttribute("flash-type"));
 
         int lastPage = urls.size() + 1;
-        int currentPage = page + 1;
+        int currentPage = ctx.queryParamAsClass("page", Integer.class).getOrDefault(1);
         List<Integer> pages = IntStream
                 .range(1, lastPage)
                 .boxed()
@@ -44,7 +37,7 @@ public class UrlsController {
 
         ctx.attribute("urls", urls);
         ctx.attribute("currentPage", currentPage);
-
+        //ctx.attribute("urlChecks", urlChecks);
         ctx.attribute("pages", pages);
         ctx.render("/urls/index.html");
     };
