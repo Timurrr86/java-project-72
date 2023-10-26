@@ -21,6 +21,8 @@ import java.util.stream.IntStream;
 public class UrlsController {
     public static Handler listURLs = ctx -> {
         List<Url> urls = UrlsRepository.getEntities();
+        int page = ctx.queryParamAsClass("page", Integer.class).getOrDefault(1) - 1;
+
         //Map<Long, UrlCheck> urlChecks = UrlChecksRepository.findLatestChecks();
         //var page = new UrlsPage(urls, urlChecks);
         //int page = ctx.queryParamAsClass("page", Integer.class).getOrDefault(1) - 1;
@@ -28,7 +30,7 @@ public class UrlsController {
         //page.setFlashType(ctx.consumeSessionAttribute("flash-type"));
 
         int lastPage = urls.size() + 1;
-        int currentPage = ctx.queryParamAsClass("page", Integer.class).getOrDefault(1);
+        int currentPage = page + 1;
         List<Integer> pages = IntStream
                 .range(1, lastPage)
                 .boxed()
