@@ -16,15 +16,16 @@ import org.jsoup.nodes.Element;
 
 import java.net.URL;
 import java.util.List;
-import java.util.stream.IntStream;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class UrlsController {
     public static Handler listURLs = ctx -> {
         List<Url> urls = UrlsRepository.getEntities();
         int page = ctx.queryParamAsClass("page", Integer.class).getOrDefault(1) - 1;
 
-        //Map<Long, UrlCheck> urlChecks = UrlChecksRepository.findLatestChecks();
+        Map<Long, UrlCheck> urlChecks = UrlChecksRepository.findLatestChecks();
         //var page = new UrlsPage(urls, urlChecks);
         //int page = ctx.queryParamAsClass("page", Integer.class).getOrDefault(1) - 1;
         //page.setFlash(ctx.consumeSessionAttribute("flash"));
@@ -40,7 +41,7 @@ public class UrlsController {
 
         ctx.attribute("urls", urls);
         ctx.attribute("currentPage", currentPage);
-        //ctx.attribute("urlChecks", urlChecks);
+        ctx.attribute("urlChecks", urlChecks);
         ctx.attribute("pages", pages);
         ctx.render("/urls/index.html");
     };
