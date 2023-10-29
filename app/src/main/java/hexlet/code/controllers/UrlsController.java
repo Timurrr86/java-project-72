@@ -17,6 +17,7 @@ import org.jsoup.nodes.Element;
 import java.net.URL;
 import java.util.List;
 import java.util.stream.IntStream;
+import java.util.stream.Collectors;
 
 public class UrlsController {
     public static Handler listURLs = ctx -> {
@@ -34,7 +35,7 @@ public class UrlsController {
         List<Integer> pages = IntStream
                 .range(1, lastPage)
                 .boxed()
-                .toList();
+                .collect(Collectors.toList());
 
 
         ctx.attribute("urls", urls);
