@@ -53,7 +53,7 @@ public class AppTest {
     }
 
     @BeforeEach
-    void setUp() throws SQLException, IOException {
+    public final void setUp() throws SQLException, IOException {
         app = App.getApp();
     }
 
