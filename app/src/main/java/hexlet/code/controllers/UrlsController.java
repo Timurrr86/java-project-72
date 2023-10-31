@@ -1,5 +1,6 @@
 package hexlet.code.controllers;
 
+import hexlet.code.dto.UrlPage;
 import hexlet.code.model.Url;
 import hexlet.code.model.UrlCheck;
 import hexlet.code.repository.UrlChecksRepository;
@@ -16,6 +17,7 @@ import org.jsoup.nodes.Element;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class UrlsController {
@@ -24,13 +26,17 @@ public class UrlsController {
         int page = ctx.queryParamAsClass("page", Integer.class).getOrDefault(1) - 1;
 
         Map<Long, UrlCheck> urlChecks = UrlChecksRepository.findLatestChecks();
+        //var page = new UrlsPage(urls, urlChecks);
+        //int page = ctx.queryParamAsClass("page", Integer.class).getOrDefault(1) - 1;
+        //page.setFlash(ctx.consumeSessionAttribute("flash"));
+        //page.setFlashType(ctx.consumeSessionAttribute("flash-type"));
 
         int lastPage = urls.size() + 1;
         int currentPage = page + 1;
         List<Integer> pages = IntStream
                 .range(1, lastPage)
                 .boxed()
-                .toList();
+                .collect(Collectors.toList());
 
 
         ctx.attribute("urls", urls);
@@ -83,6 +89,10 @@ public class UrlsController {
                 .orElseThrow(() -> new NotFoundResponse("Url with id = " + id + " not found"));
 
         var urlChecks = UrlChecksRepository.findLastCheckByUrlId(id);
+
+        var page = new UrlPage(url, urlChecks);
+        page.setFlash(ctx.consumeSessionAttribute("flash"));
+        page.setFlashType(ctx.consumeSessionAttribute("flash-type"));
 
         ctx.attribute("urlChecks", urlChecks);
         ctx.attribute("url", url);
